@@ -1,0 +1,5 @@
+*.json
+firebase-adminsdk*.json
+.env
+venv/
+__pycache__/
