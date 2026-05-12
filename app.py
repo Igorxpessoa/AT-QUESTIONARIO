@@ -1,23 +1,29 @@
 import os
+import json
 from datetime import datetime
 from flask import Flask, request, jsonify
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 # ── Configuração do Firebase ───────────────────────────────────────────────────
-# Pega o caminho da pasta onde o app.py está
-basedir = os.path.abspath(os.path.dirname(__file__))
-# Une o caminho da pasta com o nome do arquivo JSON
-CHAVE_FIREBASE = os.path.join(basedir, "questat-178b3-firebase-adminsdk-fbsvc-0efee9ac66.json")
+# Tenta buscar o conteúdo do JSON através da variável de ambiente do Render
+firebase_config_str = os.environ.get("FIREBASE_CONFIG")
 
 try:
-    if not os.path.exists(CHAVE_FIREBASE):
-        print(f"❌ ARQUIVO NÃO ENCONTRADO NO CAMINHO: {CHAVE_FIREBASE}")
+    if not firebase_config_str:
+        print("❌ VARIÁVEL DE AMBIENTE 'FIREBASE_CONFIG' NÃO ENCONTRADA.")
     else:
-        cred = credentials.Certificate(CHAVE_FIREBASE)
+        # Converte a string JSON para um dicionário Python
+        firebase_config_dict = json.loads(firebase_config_str)
+        
+        # O Certificate aceita um dicionário diretamente, dispensando o arquivo físico
+        cred = credentials.Certificate(firebase_config_dict)
         firebase_admin.initialize_app(cred)
         db = firestore.client()
         print("✅ Firebase conectado com sucesso!")
+        
+except json.JSONDecodeError:
+    print("❌ Erro: O conteúdo da variável 'FIREBASE_CONFIG' não é um JSON válido.")
 except Exception as e:
     print(f"❌ Erro ao conectar no Firebase: {e}")
 
