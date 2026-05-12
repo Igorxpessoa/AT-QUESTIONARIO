@@ -5,14 +5,19 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # ── Configuração do Firebase ───────────────────────────────────────────────────
-# O arquivo JSON deve estar na mesma pasta que este script
-CHAVE_FIREBASE = "questat-178b3-firebase-adminsdk-fbsvc-0efee9ac66.json"
+# Pega o caminho da pasta onde o app.py está
+basedir = os.path.abspath(os.path.dirname(__file__))
+# Une o caminho da pasta com o nome do arquivo JSON
+CHAVE_FIREBASE = os.path.join(basedir, "questat-178b3-firebase-adminsdk-fbsvc-0efee9ac66.json")
 
 try:
-    cred = credentials.Certificate(CHAVE_FIREBASE)
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    print("✅ Firebase conectado com sucesso!")
+    if not os.path.exists(CHAVE_FIREBASE):
+        print(f"❌ ARQUIVO NÃO ENCONTRADO NO CAMINHO: {CHAVE_FIREBASE}")
+    else:
+        cred = credentials.Certificate(CHAVE_FIREBASE)
+        firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        print("✅ Firebase conectado com sucesso!")
 except Exception as e:
     print(f"❌ Erro ao conectar no Firebase: {e}")
 
