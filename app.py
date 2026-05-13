@@ -1,31 +1,53 @@
 import os
 import json
+import uuid
+import requests
 from datetime import datetime
 from flask import Flask, request, jsonify
-import firebase_admin
-from firebase_admin import credentials, firestore
 
-# ── Configuração do Firebase ───────────────────────────────────────────────────
-# Tenta buscar o conteúdo do JSON através da variável de ambiente do Render
-firebase_config_str = os.environ.get("FIREBASE_CONFIG")
+# ── Configuração do Firestore REST API ────────────────────────────────────────
+FIREBASE_API_KEY = os.environ.get("APIKEY")
+FIREBASE_PROJECT_ID = os.environ.get("PROJECTID")
 
-try:
-    if not firebase_config_str:
-        print("❌ VARIÁVEL DE AMBIENTE 'FIREBASE_CONFIG' NÃO ENCONTRADA.")
-    else:
-        # Converte a string JSON para um dicionário Python
-        firebase_config_dict = json.loads(firebase_config_str)
-        
-        # O Certificate aceita um dicionário diretamente, dispensando o arquivo físico
-        cred = credentials.Certificate(firebase_config_dict)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
-        print("✅ Firebase conectado com sucesso!")
-        
-except json.JSONDecodeError:
-    print("❌ Erro: O conteúdo da variável 'FIREBASE_CONFIG' não é um JSON válido.")
-except Exception as e:
-    print(f"❌ Erro ao conectar no Firebase: {e}")
+FIRESTORE_BASE_URL = (
+    f"https://firestore.googleapis.com/v1/"
+    f"projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents"
+)
+
+def firestore_save(collection: str, data: dict) -> str:
+    """
+    Salva um documento no Firestore via REST API (API Key pública).
+    Retorna o ID do documento criado.
+    """
+    doc_id = str(uuid.uuid4()).replace("-", "")[:20]
+    url = f"{FIRESTORE_BASE_URL}/{collection}/{doc_id}?key={FIREBASE_API_KEY}"
+
+    # Converte o dicionário Python para o formato de campos do Firestore
+    fields = {}
+    for k, v in data.items():
+        if isinstance(v, bool):
+            fields[k] = {"booleanValue": v}
+        elif isinstance(v, int):
+            fields[k] = {"integerValue": str(v)}
+        elif isinstance(v, float):
+            fields[k] = {"doubleValue": v}
+        elif v is None:
+            fields[k] = {"nullValue": None}
+        else:
+            fields[k] = {"stringValue": str(v)}
+
+    payload = {"fields": fields}
+    response = requests.patch(url, json=payload, timeout=10)
+
+    if response.status_code not in (200, 201):
+        raise Exception(f"Firestore erro {response.status_code}: {response.text}")
+
+    return doc_id
+
+if not FIREBASE_API_KEY or not FIREBASE_PROJECT_ID:
+    print("❌ Variáveis de ambiente 'APIKEY' ou 'PROJECTID' não encontradas.")
+else:
+    print(f"✅ Firestore REST API configurado para o projeto: {FIREBASE_PROJECT_ID}")
 
 # ── Configuração do Flask ──────────────────────────────────────────────────────
 app = Flask(__name__)
@@ -153,12 +175,11 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step2">
-  <span class="badge">⚠️ Local da falha</span>
-  <h2 class="question">Onde ocorreu a falha?</h2>
+  <span class="badge">📍 Versão do aplicativo</span>
+  <h2 class="question">Qual a versão do aplicativo Auvo instalada no dispositivo?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'local_falha','No momento do Check-in')"><div class="radio-dot"></div><span class="opt-text">No momento do Check-in</span></button>
-    <button class="opt" onclick="pick(this,'local_falha','No momento do Checkout')"><div class="radio-dot"></div><span class="opt-text">No momento do Checkout</span></button>
-    <button class="opt" onclick="pick(this,'local_falha','Outro')"><div class="radio-dot"></div><span class="opt-text">Outro</span></button>
+    <button class="opt" onclick="pick(this,'versao','Maior que 2.0')"><div class="radio-dot"></div><span class="opt-text">Maior que 2.0</span></button>
+    <button class="opt" onclick="pick(this,'versao','Menor que 2.0')"><div class="radio-dot"></div><span class="opt-text">Menor que 2.0</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(1)">← Voltar</button>
@@ -167,11 +188,12 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step3">
-  <span class="badge">📍 Versão do aplicativo</span>
-  <h2 class="question">Qual a versão do aplicativo Auvo instalada no dispositivo?</h2>
+  <span class="badge">⚠️ Local da falha</span>
+  <h2 class="question">Onde ocorreu a falha?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'versao','Maior que 2.0')"><div class="radio-dot"></div><span class="opt-text">Maior que 2.0</span></button>
-    <button class="opt" onclick="pick(this,'versao','Menor que 2.0')"><div class="radio-dot"></div><span class="opt-text">Menor que 2.0</span></button>
+    <button class="opt" onclick="pick(this,'local_falha','No momento do Check-in')"><div class="radio-dot"></div><span class="opt-text">No momento do Check-in</span></button>
+    <button class="opt" onclick="pick(this,'local_falha','No momento do Checkout')"><div class="radio-dot"></div><span class="opt-text">No momento do Checkout</span></button>
+    <button class="opt" onclick="pick(this,'local_falha','Outro')"><div class="radio-dot"></div><span class="opt-text">Outro</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(2)">← Voltar</button>
@@ -347,17 +369,16 @@ def salvar():
     try:
         # Recebe os dados do front-end
         data = request.json
-        
+
         # Adiciona o timestamp
         data['criado_em'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Salva no Firestore dentro da coleção 'respostas'
-        doc_ref = db.collection('respostas').document()
-        doc_ref.set(data)
-        
-        # Retorna o ID do documento criado no Firebase
-        return jsonify({"ok": True, "id": doc_ref.id}), 200
-        
+
+        # Salva no Firestore via REST API dentro da coleção 'respostas'
+        doc_id = firestore_save('respostas', data)
+
+        # Retorna o ID do documento criado no Firestore
+        return jsonify({"ok": True, "id": doc_id}), 200
+
     except Exception as e:
         print(f"Erro ao salvar: {e}")
         return jsonify({"ok": False, "erro": str(e)}), 500
