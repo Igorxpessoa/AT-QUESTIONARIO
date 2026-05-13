@@ -153,11 +153,12 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step2">
-  <span class="badge">📍 Versão do aplicativo</span>
-  <h2 class="question">Qual a versão do aplicativo Auvo instalada no dispositivo?</h2>
+  <span class="badge">⚠️ Local da falha</span>
+  <h2 class="question">Onde ocorreu a falha?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'versao','Maior que 2.0')"><div class="radio-dot"></div><span class="opt-text">Maior que 2.0</span></button>
-    <button class="opt" onclick="pick(this,'versao','Menor que 2.0')"><div class="radio-dot"></div><span class="opt-text">Menor que 2.0</span></button>
+    <button class="opt" onclick="pick(this,'local_falha','No momento do Check-in')"><div class="radio-dot"></div><span class="opt-text">No momento do Check-in</span></button>
+    <button class="opt" onclick="pick(this,'local_falha','No momento do Checkout')"><div class="radio-dot"></div><span class="opt-text">No momento do Checkout</span></button>
+    <button class="opt" onclick="pick(this,'local_falha','Outro')"><div class="radio-dot"></div><span class="opt-text">Outro</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(1)">← Voltar</button>
@@ -166,11 +167,11 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step3">
-  <span class="badge">📍 Localização</span>
-  <h2 class="question">O aplicativo tem permissão de acessar a localização?</h2>
+  <span class="badge">📍 Versão do aplicativo</span>
+  <h2 class="question">Qual a versão do aplicativo Auvo instalada no dispositivo?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'permissao_localizacao','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim</span></button>
-    <button class="opt" onclick="pick(this,'permissao_localizacao','Não')"><div class="radio-dot"></div><span class="opt-text">Não</span></button>
+    <button class="opt" onclick="pick(this,'versao','Maior que 2.0')"><div class="radio-dot"></div><span class="opt-text">Maior que 2.0</span></button>
+    <button class="opt" onclick="pick(this,'versao','Menor que 2.0')"><div class="radio-dot"></div><span class="opt-text">Menor que 2.0</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(2)">← Voltar</button>
@@ -180,11 +181,10 @@ HTML = """<!DOCTYPE html>
 
 <div class="card hidden" id="step4">
   <span class="badge">📍 Localização</span>
-  <h2 class="question">Em permissões, a permissão de localização está setada como?</h2>
+  <h2 class="question">O aplicativo tem permissão de acessar a localização?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'status_permissao','Permitir o tempo todo')"><div class="radio-dot"></div><span class="opt-text">Permitir o tempo todo</span></button>
-    <button class="opt" onclick="pick(this,'status_permissao','Permitir sempre')"><div class="radio-dot"></div><span class="opt-text">Permitir sempre</span></button>
-    <button class="opt" onclick="pick(this,'status_permissao','Permitir durante o uso do app')"><div class="radio-dot"></div><span class="opt-text">Permitir durante o uso do app</span></button>
+    <button class="opt" onclick="pick(this,'permissao_localizacao','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim</span></button>
+    <button class="opt" onclick="pick(this,'permissao_localizacao','Não')"><div class="radio-dot"></div><span class="opt-text">Não</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(3)">← Voltar</button>
@@ -193,12 +193,12 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step5">
-  <span class="badge">🎯 Localização exata</span>
-  <h2 class="question">A opção "Usar localização exata" está ativa nas permissões do Auvo?</h2>
+  <span class="badge">📍 Localização</span>
+  <h2 class="question">Em permissões, a permissão de localização está setada como?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'localização_exata','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim, localização exata ativada</span></button>
-    <button class="opt" onclick="pick(this,'localização_exata','Não')"><div class="radio-dot"></div><span class="opt-text">Não, está usando localização aproximada</span></button>
-    <button class="opt" onclick="pick(this,'localização_exata','Não sei')"><div class="radio-dot"></div><span class="opt-text">Não sei / não verifiquei</span></button>
+    <button class="opt" onclick="pick(this,'status_permissao','Permitir o tempo todo')"><div class="radio-dot"></div><span class="opt-text">Permitir o tempo todo</span></button>
+    <button class="opt" onclick="pick(this,'status_permissao','Permitir sempre')"><div class="radio-dot"></div><span class="opt-text">Permitir sempre</span></button>
+    <button class="opt" onclick="pick(this,'status_permissao','Permitir durante o uso do app')"><div class="radio-dot"></div><span class="opt-text">Permitir durante o uso do app</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(4)">← Voltar</button>
@@ -207,11 +207,12 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step6">
-  <span class="badge">🔋 Bateria / Segundo plano</span>
-  <h2 class="question">A otimização de bateria está desativada para o app Auvo?</h2>
+  <span class="badge">🎯 Localização exata</span>
+  <h2 class="question">A opção "Usar localização exata" está ativa nas permissões do Auvo?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'nivel_bateria','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim, a otimização de bateria está desativada</span></button>
-    <button class="opt" onclick="pick(this,'nivel_bateria','Não')"><div class="radio-dot"></div><span class="opt-text">Não, o app está sendo otimizado</span></button>
+    <button class="opt" onclick="pick(this,'localização_exata','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim, localização exata ativada</span></button>
+    <button class="opt" onclick="pick(this,'localização_exata','Não')"><div class="radio-dot"></div><span class="opt-text">Não, está usando localização aproximada</span></button>
+    <button class="opt" onclick="pick(this,'localização_exata','Não sei')"><div class="radio-dot"></div><span class="opt-text">Não sei / não verifiquei</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(5)">← Voltar</button>
@@ -220,11 +221,11 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step7">
-  <span class="badge">🗺️ Pausa no app</span>
-  <h2 class="question">A opção "Pausar app por falta de uso" está ativada?</h2>
+  <span class="badge">🔋 Bateria / Segundo plano</span>
+  <h2 class="question">A otimização de bateria está desativada para o app Auvo?</h2>
   <div class="options">
-    <button class="opt" onclick="pick(this,'pausa_inatividade','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim, está ativada</span></button>
-    <button class="opt" onclick="pick(this,'pausa_inatividade','Não')"><div class="radio-dot"></div><span class="opt-text">Não, está desativada</span></button>
+    <button class="opt" onclick="pick(this,'nivel_bateria','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim, a otimização de bateria está desativada</span></button>
+    <button class="opt" onclick="pick(this,'nivel_bateria','Não')"><div class="radio-dot"></div><span class="opt-text">Não, o app está sendo otimizado</span></button>
   </div>
   <div class="nav">
     <button class="btn-back" onclick="goTo(6)">← Voltar</button>
@@ -233,6 +234,19 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="card hidden" id="step8">
+  <span class="badge">🗺️ Pausa no app</span>
+  <h2 class="question">A opção "Pausar app por falta de uso" está ativada?</h2>
+  <div class="options">
+    <button class="opt" onclick="pick(this,'pausa_inatividade','Sim')"><div class="radio-dot"></div><span class="opt-text">Sim, está ativada</span></button>
+    <button class="opt" onclick="pick(this,'pausa_inatividade','Não')"><div class="radio-dot"></div><span class="opt-text">Não, está desativada</span></button>
+  </div>
+  <div class="nav">
+    <button class="btn-back" onclick="goTo(7)">← Voltar</button>
+    <button class="btn-next" id="n8" disabled onclick="goTo(9)">Próximo →</button>
+  </div>
+</div>
+
+<div class="card hidden" id="step9">
   <span class="badge">🏭 Notificação</span>
   <h2 class="question">O app Auvo tem permissão para enviar notificações?</h2>
   <div class="options">
@@ -240,8 +254,8 @@ HTML = """<!DOCTYPE html>
     <button class="opt" onclick="pick(this,'permissao_notificacao','Não')"><div class="radio-dot"></div><span class="opt-text">Não tem permissão</span></button>
   </div>
   <div class="nav">
-    <button class="btn-back" onclick="goTo(7)">← Voltar</button>
-    <button class="btn-next" id="n8" disabled onclick="enviar()">Enviar Respostas →</button>
+    <button class="btn-back" onclick="goTo(8)">← Voltar</button>
+    <button class="btn-next" id="n9" disabled onclick="enviar()">Enviar Respostas →</button>
   </div>
 </div>
 
@@ -255,7 +269,7 @@ HTML = """<!DOCTYPE html>
 
 <script>
 const answers = {};
-const TOTAL = 8; // Perguntas de diagnóstico (1 a 8)
+const TOTAL = 9; // Perguntas de diagnóstico (1 a 9)
 
 function validateStep0() {
   const nome = document.getElementById('input_nome').value.trim();
@@ -290,7 +304,7 @@ function goTo(num) {
 }
 
 async function enviar() {
-  const btn = document.getElementById('n8');
+  const btn = document.getElementById('n9');
   btn.disabled = true;
   btn.textContent = 'Salvando…';
 
